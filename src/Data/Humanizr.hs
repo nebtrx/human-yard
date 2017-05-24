@@ -6,14 +6,12 @@ module Data.Humanizr
 import           Data.Char             (toLower, toUpper)
 import           Data.Char             (isUpper)
 import           Data.Foldable         (foldr, null)
+import           Data.List             (concat, intersperse)
 import           Data.Tuple            (fst)
 import           Text.Regex.PCRE.Heavy
 
 pascalCaseWordPartsRegex = [re|[A-Z][a-z]+|[A-Z]+(?![a-z])|]
 freestandingSpacingCharRegex = [re|\s[-_]|[-_]\s|]
-
-parsePascalCaseWordParts :: String -> [String]
-parsePascalCaseWordParts s = reverse $ fst <$> (scan pascalCaseWordPartsRegex s :: [(String, [String])])
 
 splitBy :: [Char] -> String -> [String]
 splitBy cs s =  case dropWhile predicate s of
@@ -23,21 +21,33 @@ splitBy cs s =  case dropWhile predicate s of
     where
         predicate = flip elem cs
 
+join :: [a] -> [[a]] -> [a]
+join delim l = concat (intersperse delim l)
+
+isUpperString :: String -> Bool
+isUpperString = all isUpper
+
 fromUnderscoreDashSeparatedWords :: String -> String
-fromUnderscoreDashSeparatedWords = foldr joinFn "" . splitBy ['-', '_']
-    where joinFn e acc =  acc ++ " " ++ e
+fromUnderscoreDashSeparatedWords = join "" . splitBy ['-', '_']
 
 fromPascalCase :: String -> String
-fromPascalCase = foldr joinFn "" . parsePascalCaseWordParts
+fromPascalCase = ensureFirstCase . join " " . parsePascalCaseWordParts
     where
-        joinFn e acc =  accAndSeparator acc ++ e
-        accAndSeparator acc = if null acc
-            -- FIXME: i don't like this, probably a map(not trivial)
-            then acc
-            else acc ++ " "
+        parsePascalCaseWordParts :: String -> [String]
+        parsePascalCaseWordParts s = casefy . fst <$> (scan pascalCaseWordPartsRegex s :: [(String, [String])])
+
+        casefy :: String -> String
+        casefy match = if isUpperString match && (length match > 1 || match == "I")
+            then match
+            else toLower <$> match
+
+        ensureFirstCase :: String -> String
+        ensureFirstCase r = if length r > 1
+            then (toUpper <$> take 1 r) ++ drop 1 r
+            else r
 
 humanize :: String -> String
-humanize s = if all isUpper s
+humanize s = if isUpperString s
     then
         ( if s =~ freestandingSpacingCharRegex
               then fromPascalCase . fromUnderscoreDashSeparatedWords $ s
