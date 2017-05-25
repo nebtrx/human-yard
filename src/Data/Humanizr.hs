@@ -3,10 +3,10 @@
 module Data.Humanizr
     where
 
-import           Data.Char             (toLower, toUpper)
+import           Data.Char             (isUpper, toLower, toUpper)
 import           Data.Char             (isUpper)
 import           Data.Foldable         (foldr, null)
-import           Data.List             (concat, intersperse)
+import           Data.List             (concat, intercalate, intersperse)
 import           Data.Tuple            (fst)
 import           Text.Regex.PCRE.Heavy
 
@@ -21,17 +21,14 @@ splitBy cs s =  case dropWhile predicate s of
     where
         predicate = flip elem cs
 
-join :: [a] -> [[a]] -> [a]
-join delim l = concat (intersperse delim l)
-
 isUpperString :: String -> Bool
 isUpperString = all isUpper
 
 fromUnderscoreDashSeparatedWords :: String -> String
-fromUnderscoreDashSeparatedWords = join "" . splitBy ['-', '_']
+fromUnderscoreDashSeparatedWords = intercalate "" . splitBy ['-', '_']
 
 fromPascalCase :: String -> String
-fromPascalCase = ensureFirstCase . join " " . parsePascalCaseWordParts
+fromPascalCase = ensureFirstCase . unwords . parsePascalCaseWordParts
     where
         parsePascalCaseWordParts :: String -> [String]
         parsePascalCaseWordParts s = casefy
@@ -43,7 +40,7 @@ fromPascalCase = ensureFirstCase . join " " . parsePascalCaseWordParts
             else toLower <$> match
 
         ensureFirstCase :: String -> String
-        ensureFirstCase r = if length r > 0
+        ensureFirstCase r = if not (null r)
             then (toUpper <$> take 1 r) ++ drop 1 r
             else r
 
