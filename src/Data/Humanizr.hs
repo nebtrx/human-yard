@@ -34,7 +34,8 @@ fromPascalCase :: String -> String
 fromPascalCase = ensureFirstCase . join " " . parsePascalCaseWordParts
     where
         parsePascalCaseWordParts :: String -> [String]
-        parsePascalCaseWordParts s = casefy . fst <$> (scan pascalCaseWordPartsRegex s :: [(String, [String])])
+        parsePascalCaseWordParts s = casefy
+            . fst <$> (scan pascalCaseWordPartsRegex s :: [(String, [String])])
 
         casefy :: String -> String
         casefy match = if isUpperString match && (length match > 1 || match == "I")
