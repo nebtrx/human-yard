@@ -10,7 +10,7 @@ import           Data.List             (concat, intersperse)
 import           Data.Tuple            (fst)
 import           Text.Regex.PCRE.Heavy
 
-pascalCaseWordPartsRegex = [re|[A-Z][a-z]+|[A-Z]+(?![a-z])|]
+pascalCaseWordPartsRegex = [re|[\p{Lu}]?[\p{Ll}]+|[0-9]+[\p{Ll}]*|[\p{Lu}]+(?=[\p{Lu}][\p{Ll}]|[0-9]|\b)|[\p{Lo}]+|]
 freestandingSpacingCharRegex = [re|\s[-_]|[-_]\s|]
 
 splitBy :: [Char] -> String -> [String]
@@ -42,7 +42,7 @@ fromPascalCase = ensureFirstCase . join " " . parsePascalCaseWordParts
             else toLower <$> match
 
         ensureFirstCase :: String -> String
-        ensureFirstCase r = if length r > 1
+        ensureFirstCase r = if length r > 0
             then (toUpper <$> take 1 r) ++ drop 1 r
             else r
 
