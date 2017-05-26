@@ -10,6 +10,8 @@ import           Data.List             (concat, intercalate, intersperse)
 import           Data.Tuple            (fst)
 import           Text.Regex.PCRE.Heavy
 
+-- TODO: Add APi for TEXT?
+
 pascalCaseWordPartsRegex = [re|[\p{Lu}]?[\p{Ll}]+|[0-9]+[\p{Ll}]*|[\p{Lu}]+(?=[\p{Lu}][\p{Ll}]|[0-9]|\b)|[\p{Lo}]+|]
 freestandingSpacingCharRegex = [re|\s[-_]|[-_]\s|]
 
@@ -31,8 +33,8 @@ fromPascalCase :: String -> String
 fromPascalCase = ensureFirstCase . unwords . parsePascalCaseWordParts
     where
         parsePascalCaseWordParts :: String -> [String]
-        parsePascalCaseWordParts s = casefy
-            . fst <$> (scan pascalCaseWordPartsRegex s :: [(String, [String])])
+        parsePascalCaseWordParts s = casefy . fst <$> matches
+            where matches = scan pascalCaseWordPartsRegex s :: [(String, [String])]
 
         casefy :: String -> String
         casefy match = if isUpperString match && (length match > 1 || match == "I")

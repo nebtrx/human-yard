@@ -41,5 +41,16 @@ spec = do
                                       ]
             mapM_ humanizeExpectation expectationsExample
 
+        it "Can humanize string with acronyms" $ do
+            let expectationsExample = [ ("HTML", "HTML")
+                                      , ("TheHTMLLanguage", "The HTML language")
+                                      , ("HTMLIsTheLanguage", "HTML is the language")
+                                      , ("TheLanguage IsHTML", "The language is HTML")
+                                      , ("TheLanguageIsHTML", "The language is HTML")
+                                      , ("HTML5", "HTML 5")
+                                      , ("1HTML", "1 HTML")
+                                      ]
+            mapM_ humanizeExpectation expectationsExample
+
 humanizeExpectation :: (String, String) -> Expectation
 humanizeExpectation (text, expectation) = humanize text `shouldBe` expectation
