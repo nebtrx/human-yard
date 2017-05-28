@@ -1,9 +1,12 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Data.HumanizrSpec
     ( spec
     ) where
 
-import           Control.Monad (mapM_)
+import           Control.Monad  (mapM_)
+import           Data.Humanized
 import           Data.Humanizr
+import qualified Data.Text      as T
 import           Test.Hspec
 
 spec :: Spec
@@ -52,5 +55,5 @@ spec = do
                                       ]
             mapM_ humanizeExpectation expectationsExample
 
-humanizeExpectation :: (String, String) -> Expectation
+humanizeExpectation :: (T.Text, T.Text) -> Expectation
 humanizeExpectation (text, expectation) = humanize text `shouldBe` expectation

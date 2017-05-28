@@ -16,8 +16,12 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Data.Humanizr
-  build-depends:       base           >= 4.7 && < 5
-                     , pcre-heavy     >= 1.0.0 && < 1.5
+                     , Data.Humanized
+  other-modules:       Data.Humanizr.Transformer
+                     , Data.Text.Utils
+  build-depends:       base           >= 4.7      && < 5
+                     , pcre-heavy     >= 1.0.0    && < 1.5
+                     , text           >= 1.2.2.1  && < 1.5
   default-language:    Haskell2010
 
 executable humanizr-exe
@@ -36,6 +40,7 @@ test-suite humanizr-test
   build-depends:       base
                      , humanizr
                      , hspec          >= 2.0 && < 3.0
+                     , text
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
