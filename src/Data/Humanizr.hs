@@ -58,9 +58,15 @@ humanize s = if TU.isUpper s
         )
     else fromPascalCase s
 
-humanizedWithCase :: T.Text -> Transformer -> T.Text
-humanizedWithCase i t = fromHumanizedText . (-/> t) . mkHumanizedText $ i
+humanizeWithCase :: T.Text -> Transformer -> T.Text
+humanizeWithCase i t = fromHumanizedText . (-/> t) . mkHumanizedText . humanize $ i
 
-infixl 4 .-/>
-(.-/>) :: T.Text -> Transformer -> T.Text
-(.-/>) = humanizedWithCase
+infixl 4 />
+(/>) :: T.Text -> Transformer -> T.Text
+(/>) = humanizeWithCase
+
+
+infixl 4 $/>
+($/>) :: T.Text -> (T.Text -> a) -> a
+($/>) = flip ($)
+

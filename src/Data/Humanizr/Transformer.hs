@@ -50,6 +50,6 @@ infixl 4 ./
 (./) ::  Transformer -> Transformer -> Transformer
 (./) = sequenceTransformers
 
---"ffdfdfd" -./> casTr ./ upTR
+--"ffdfdfd" /> casTr ./ upTR
 
 --"ffdfdfd" .-/> casTr ./ upTR
