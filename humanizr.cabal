@@ -17,8 +17,8 @@ library
   hs-source-dirs:      src
   exposed-modules:     Data.Humanizr
                      , Data.Humanized
-  other-modules:       Data.Humanizr.Transformer
-                     , Data.Text.Utils
+                     , Data.Humanizr.Transformer
+  other-modules:       Data.Text.Utils
   build-depends:       base           >= 4.7      && < 5
                      , pcre-heavy     >= 1.0.0    && < 1.5
                      , text           >= 1.2.2.1  && < 1.5

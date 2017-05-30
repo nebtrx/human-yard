@@ -3,10 +3,11 @@ module Data.HumanizrSpec
     ( spec
     ) where
 
-import           Control.Monad  (mapM_)
+import           Control.Monad             (mapM_)
 import           Data.Humanized
 import           Data.Humanizr
-import qualified Data.Text      as T
+import           Data.Humanizr.Transformer
+import qualified Data.Text                 as T
 import           Test.Hspec
 
 spec :: Spec
@@ -55,5 +56,40 @@ spec = do
                                       ]
             mapM_ humanizeExpectation expectationsExample
 
+        it "Can humanize into title case" $ do
+            let expectationsExample = [ ("CanReturnTitleCase", "Can Return Title Case")
+                                      , ("Can_return_title_Case", "Can Return Title Case")
+                                      , ("Title_humanization_Honors_ALLCAPS", "Title Humanization Honors ALLCAPS")
+                                      , ("MühldorferStraße23", "Mühldorfer Straße 23")
+                                      , ("mühldorfer_STRAẞE_23", "Mühldorfer STRAẞE 23")
+                                      , ("HTML5", "HTML 5")
+                                      , ("1HTML", "1 HTML")
+                                      ]
+            mapM_ (humanizeExpectationWithCase titleCaseTransformer) expectationsExample
+
+        it "Can humanize into lower case" $ do
+            let expectationsExample = [ ("CanReturnLowerCase", "can return lower case")
+                                      , ("LOWERCASE", "lowercase")
+                                      , ("STRAẞE", "straße")
+                                      ]
+            mapM_ (humanizeExpectationWithCase lowerCaseTransformer) expectationsExample
+
+        it "Can humanize into sentence case" $ do
+            let expectationsExample = [ ("CanReturnSentenceCase", "Can return sentence case")
+                                      , ("", "")
+                                      , ("égoïste", "Égoïste")
+                                      ]
+            mapM_ (humanizeExpectationWithCase sentenceCaseTransformer) expectationsExample
+
+        it "Can humanize into upper case" $ do
+            let expectationsExample = [ ("CanHumanizeIntoUpperCase", "CAN HUMANIZE INTO UPPER CASE")
+                                      , ("Can_Humanize_into_Upper_case", "CAN HUMANIZE INTO UPPER CASE")
+                                      , ("coûts_privés", "COÛTS PRIVÉS")
+                                      ]
+            mapM_ (humanizeExpectationWithCase upperCaseTransformer) expectationsExample
+
 humanizeExpectation :: (T.Text, T.Text) -> Expectation
 humanizeExpectation (text, expectation) = humanize text `shouldBe` expectation
+
+humanizeExpectationWithCase :: Transformer -> (T.Text, T.Text) -> Expectation
+humanizeExpectationWithCase tr (text, expectation) = (text /> tr) `shouldBe` expectation
